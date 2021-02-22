@@ -21,7 +21,11 @@ const MyJumbo = () => {
 };
 
 class App extends Component {
-  /**
+  constructor(props) {
+    super(props);
+    this.state = { code: null };// track status
+  }
+    /**
    * Get a Post by its ID
    */
   getById() {
@@ -34,9 +38,7 @@ class App extends Component {
     spin.hidden = false;
     fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
       .then(response => {
-        if (response.status !== 200) {
-          return 'No Posts Found';
-        }
+        this.setState({code: response.status})
         return response.json();
       })
       .then(data => {
@@ -55,6 +57,7 @@ class App extends Component {
     spin.hidden = false;
     fetch('https://jsonplaceholder.typicode.com/posts')
       .then(response => {
+        this.setState({code: response.status})
         return response.json();
       })
       .then(data => {
@@ -84,24 +87,32 @@ class App extends Component {
    * @param {object} item the data
    */
   createTableRow(item) {
-    if (item === 'No Posts Found') {
-      alert(item);
+    const keys = Object.keys(item);
+    if (!keys.length) {
+      alert(`Nothing found: http status ${this.state.code}`);
       return;
     }
     const tb = document.getElementById('tb');
     const row = document.createElement("TR");
-    const id = document.createElement('TD');
-    const userid = document.createElement('TD');
-    const title = document.createElement('TD');
-    const body = document.createElement('TD');
-    id.innerHTML = item.id;
-    userid.innerHTML = item.userId;
-    title.innerHTML = item.title;
-    body.innerHTML = item.body;
-    row.appendChild(id);
-    row.appendChild(userid);
-    row.appendChild(title);
-    row.appendChild(body);
+
+    //first time create the headings
+    const tableHeader = document.getElementById('thd');
+    const addHeaders = !tableHeader.hasChildNodes();
+    const hrow = addHeaders ? document.createElement("TR") : null;
+
+    keys.forEach(key => {
+
+      if (hrow) {
+        const hcell = document.createElement('TH');
+        hcell.innerHTML = key.toUpperCase();
+        hrow.appendChild(hcell);
+        tableHeader.appendChild(hrow);
+      }
+
+      const cell = document.createElement('TD');
+      cell.innerHTML = item[key];
+      row.appendChild(cell);
+    });
     tb.appendChild(row)
   }
 
@@ -133,14 +144,7 @@ class App extends Component {
       <div class="row">
         <div class="col-sm-12">
           <table id="tableforall" class="table table-dark">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>User ID</th>
-                <th>Title</th>
-                <th>Body</th>
-              </tr>
-            </thead>
+            <thead id='thd' />
             <tbody id='tb' />
           </table>
         </div>
