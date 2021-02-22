@@ -40,10 +40,6 @@ class App extends Component {
         return response.json();
       })
       .then(data => {
-        if (data.Error) {
-          alert(data.Error);
-          return;
-        }
         this.resetTableBody();
         this.createTableRow(data);
       })
