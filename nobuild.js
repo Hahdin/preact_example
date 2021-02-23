@@ -137,7 +137,7 @@ class App extends Component {
             Find Post by id
           </button>
           <label>
-            <input class="form-control" type="text" id="findby" />
+            <input class="form-control input-ext" type="text" id="findby" />
           </label>
         </div>
       </div>
